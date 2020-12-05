@@ -21,6 +21,6 @@ public class D4 {
                 c++;
             }
         }
-        System.out.println("valid: " + c);
+        System.out.println("valid: " + c + "/" + finalData.length);
     }
 }

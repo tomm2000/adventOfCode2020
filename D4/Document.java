@@ -13,70 +13,151 @@ public class Document {
     }
 
     public void parseDocument(String text) {
-        boolean ok = true;
+        System.out.println("total string (" + text + ")");
         this.fields = 0;
         int a = 0;
 
         for (int i = 0; i < text.length(); i++) {
-            if (text.charAt(i) == ' ') {
+            if (text.charAt(i) == ' ' || text.charAt(i) == '\n' || i == text.length() - 1) {
                 String id = text.substring(a, a + 4);
-                String val = text.substring(a + 4, i);
+                String val;
+
+                if (i == text.length() - 1) {
+                    val = text.substring(a + 4);
+                } else {
+                    val = text.substring(a + 4, i);
+                }
+
+                System.out.print("evaluing string (" + id + " " + val + ")");
                 a = i + 1;
 
                 switch (id) {
-                    case "byr":
-                        ok = Tlib.sw(val.length() == 4, ok);
-                        ok = Tlib.sw(Integer.parseInt(val) >= 1920, ok);
-                        ok = Tlib.sw(Integer.parseInt(val) <= 2002, ok);
+                    case "byr:":
+                        if (!(val.length() == 4)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) >= 1920)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) <= 2002)) {
+                            break;
+                        }
+                        this.fields++;
                         break;
 
-                    case "iyr":
-                        ok = Tlib.sw(val.length() == 4, ok);
-                        ok = Tlib.sw(Integer.parseInt(val) >= 2010, ok);
-                        ok = Tlib.sw(Integer.parseInt(val) <= 2020, ok);
+                    case "iyr:":
+                        if (!(val.length() == 4)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) >= 2010)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) <= 2020)) {
+                            break;
+                        }
+                        this.fields++;
                         break;
 
-                    case "hgt":
-                        ok = Tlib.sw(val.length() == 4 || val.length() == 5, ok);
+                    case "eyr:":
+                        if (!(val.length() == 4)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) >= 2020)) {
+                            break;
+                        }
+                        if (!(Integer.parseInt(val) <= 2030)) {
+                            break;
+                        }
+                        this.fields++;
+                        break;
+
+                    case "hgt:":
+                        if (!(val.length() == 4 || val.length() == 5)) {
+                            break;
+                        }
                         String meas = val.substring(val.length() - 2);
                         String num = val.substring(0, val.length() - 2);
                         if (meas.equals("cm")) {
-                            ok = Tlib.sw(Integer.parseInt(num) >= 150, ok);
-                            ok = Tlib.sw(Integer.parseInt(num) <= 193, ok);
+                            if (!(Integer.parseInt(num) >= 150)) {
+                                break;
+                            }
+                            if (!(Integer.parseInt(num) <= 193)) {
+                                break;
+                            }
                         } else if (meas.equals("in")) {
-                            ok = Tlib.sw(Integer.parseInt(num) >= 59, ok);
-                            ok = Tlib.sw(Integer.parseInt(num) <= 76, ok);
+                            if (!(Integer.parseInt(num) >= 59)) {
+                                break;
+                            }
+                            if (!(Integer.parseInt(num) <= 76)) {
+                                break;
+                            }
                         } else {
-                            ok = Tlib.sw(false, ok);
+                            if (!(false)) {
+                                break;
+                            }
                         }
+                        this.fields++;
                         break;
 
-                    case "ecl":
-                        ok = Tlib.sw(val.length() == 7, ok);
+                    case "hcl:":
+                        if (!(val.length() == 7)) {
+                            break;
+                        }
                         for (int j = 1; j < val.length(); j++) {
                             char c = val.charAt(j);
-                            ok = Tlib.sw(((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')), ok);
+                            if (!(((c >= '0' && c <= '9') || (c >= 'a' && c <= 'f')))) {
+                                break;
+                            }
                         }
+                        this.fields++;
                         break;
 
-                    case "pid":
-                        ok = Tlib.sw(val.length() == 9, ok);
+                    case "ecl:":
+                        if (!(val.length() == 3)) {
+                            break;
+                        }
+                        boolean ok = false;
+                        switch (val) {
+                            case "amb":
+                            case "blu":
+                            case "brn":
+                            case "gry":
+                            case "grn":
+                            case "hzl":
+                            case "oth":
+                                ok = true;
+                                break;
+                            default:
+                                ok = false;
+                        }
+                        if (ok)
+                            this.fields++;
+                        break;
+
+                    case "pid:":
+                        if (!(val.length() == 9)) {
+                            break;
+                        }
                         for (int j = 0; j < val.length(); j++) {
                             char c = val.charAt(j);
-                            ok = Tlib.sw((c >= '0' && c <= '9'), ok);
+                            if (!((c >= '0' && c <= '9'))) {
+                                break;
+                            }
                         }
+                        this.fields++;
                         break;
 
-                    case "cid":
-                        ok = Tlib.sw(true, ok);
-
+                    case "cid:":
+                        // this.fields++;
+                        break;
                 }
+                System.out.println(" " + this.fields);
             }
         }
     }
 
     public boolean check() {
-        // System.out.println("fields: " + this.fields);
-        return this.fields == 7;
+        System.out.println("fields: " + this.fields + "\n");
+        return this.fields >= 7;
     }
 }
